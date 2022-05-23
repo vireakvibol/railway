@@ -1,10 +1,20 @@
+import { join } from 'path';
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { GraphQLModule } from '@nestjs/graphql';
+import { AppResolver } from './app.resolver';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
+    GraphQLModule.forRoot({
+      playground: true,
+      debug: false,
+      autoSchemaFile: join(__dirname, 'src/schema.gql'),
+    }),
+  ],
+  providers: [AppResolver],
 })
-export class AppModule {}
+export class AppModule { }

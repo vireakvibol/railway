@@ -1,0 +1,32 @@
+name: 'actions'
+
+on: ['push', 'pull_request']
+jobs:
+  source-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: npm install --global yarn
+      - run: |
+          yarn install
+          yarn run build --prod --output-path ../server/public
+        working-directory: 'web'
+      - run: |
+          yarn install
+          yarn run build
+        working-directory: 'server'
+  docker-io-build:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v2'
+      - name: 'Build to docker.io'
+        run: docker build . -t docker.io/library/softlibrary/railway:latest
+  quay-io-build:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v2'
+      - name: 'Build to quay.io'
+        run: docker build . -t quay.io/softlibrary/railway:latest
